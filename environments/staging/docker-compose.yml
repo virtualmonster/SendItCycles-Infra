@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  backend:
+    image: 10.0.2.16:5000/senditcycles-api:latest
+    container_name: senditcycles-api-staging
+    environment:
+      NODE_ENV: staging
+      USE_SQLITE: "true"
+      SQLITE_PATH: /data/senditcycles.db
+      PORT: "3001"
+      JWT_SECRET: ${JWT_SECRET}
+      LOG_LEVEL: info
+    expose:
+      - "3001"
+    volumes:
+      - sqlite_data_staging:/data
+    restart: unless-stopped
+    networks:
+      - senditcycles-staging
+
+  frontend:
+    image: 10.0.2.16:5000/senditcycles-web:latest
+    container_name: senditcycles-web-staging
+    environment:
+      VITE_API_URL: http://staging-api.senditcycles.internal/api
+      NODE_ENV: staging
+    expose:
+      - "80"
+    volumes:
+      - ./config/frontend-nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - senditcycles-staging
+
+  # Load balancer (Nginx reverse proxy)
+  # Demonstrates scaling: multiple backend instances can be added to upstream
+  load-balancer:
+    image: nginx:alpine
+    container_name: senditcycles-lb-staging
+    ports:
+      - "3010:80"
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - frontend
+    restart: unless-stopped
+    networks:
+      - senditcycles-staging
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  sqlite_data_staging:
+    driver: local
+
+networks:
+  senditcycles-staging:
+    driver: bridge
