@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  backend:
+    image: 10.0.2.16:5000/senditcycles-api:latest
+    container_name: senditcycles-api-dev
+    environment:
+      NODE_ENV: development
+      USE_SQLITE: "true"
+      SQLITE_PATH: /data/senditcycles.db
+      PORT: "3001"
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-key-change-in-prod}
+      LOG_LEVEL: debug
+    expose:
+      - "3001"
+    volumes:
+      - sqlite_data_dev:/data
+    networks:
+      - senditcycles-dev
+
+  frontend:
+    image: 10.0.2.16:5000/senditcycles-web:latest
+    container_name: senditcycles-web-dev
+    environment:
+      VITE_API_URL: http://localhost/api
+      NODE_ENV: development
+    expose:
+      - "80"
+    volumes:
+      - ./config/frontend-nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+    networks:
+      - senditcycles-dev
+
+  # Load balancer (Nginx reverse proxy)
+  # Can be scaled by adjusting upstream backend servers in config/nginx.conf
+  load-balancer:
+    image: nginx:alpine
+    container_name: senditcycles-lb-dev
+    ports:
+      - "3000:80"  # Frontend through LB
+      - "3001:80"  # Backend API through LB
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - senditcycles-dev
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  sqlite_data_dev:
+    driver: local
+
+networks:
+  senditcycles-dev:
+    driver: bridge
