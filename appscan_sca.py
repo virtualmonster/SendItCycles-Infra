@@ -87,7 +87,7 @@ def main():
     print("Logging in...")
     if not api_login(api_key_id, api_key_secret):
         print("Authentication failed.")
-        return
+        sys.exit(1)
 
     print("Preparing SCA...")
     stdout, stderr = prepare_sca()
@@ -100,7 +100,7 @@ def main():
     scan_ready = poll_status(scan_id, timeout=timeout)
     if not scan_ready:
         print("Scan failed.")
-        return
+        sys.exit(1)
 
     print("Retrieving report...")
     stdout, stderr = get_report(scan_id)
