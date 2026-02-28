@@ -5,20 +5,37 @@ set -e
 
 APPSCAN_KEY_ID="5079dd89-2c68-4f4a-4052-25094a7a7798"
 APPSCAN_KEY_SECRET="6jcVh9ztN1uxo2hlFg4AQ6lMV9b3IDYTghzAY8xps7PF"
-APPSCAN="appscan.sh"
+APPSCAN_DIR="/home/control5/Tools/AppScan/SAClientUtil_8.0.1685_Linux/SAClientUtil.8.0.1685/bin"
 
 echo "=========================================="
 echo "Testing AppScan Authentication"
 echo "=========================================="
 echo ""
 
-# Check if appscan.sh is available
-if ! command -v appscan.sh &> /dev/null; then
-    echo "Error: appscan.sh not found in PATH"
+# List AppScan executables
+echo "Looking for AppScan executables in: $APPSCAN_DIR"
+if [ -d "$APPSCAN_DIR" ]; then
+    echo "Files in AppScan bin directory:"
+    ls -la "$APPSCAN_DIR" | grep -E "(appscan|appscancmd)" || echo "No appscan* files found"
+    echo ""
+fi
+
+# Try to find the correct AppScan command
+if [ -f "$APPSCAN_DIR/appscan.sh" ]; then
+    APPSCAN="$APPSCAN_DIR/appscan.sh"
+elif [ -f "$APPSCAN_DIR/appscan" ]; then
+    APPSCAN="$APPSCAN_DIR/appscan"
+elif [ -f "$APPSCAN_DIR/appscancmd.sh" ]; then
+    APPSCAN="$APPSCAN_DIR/appscancmd.sh"
+elif [ -f "$APPSCAN_DIR/appscancmd" ]; then
+    APPSCAN="$APPSCAN_DIR/appscancmd"
+else
+    echo "Error: Could not find AppScan executable"
+    echo "Please check the installation directory"
     exit 1
 fi
 
-echo "AppScan CLI found: $(which appscan.sh)"
+echo "AppScan CLI found: $APPSCAN"
 echo ""
 
 # Test login
@@ -26,7 +43,7 @@ echo "Testing authentication..."
 echo "Key ID: $APPSCAN_KEY_ID"
 echo ""
 
-LOGIN_OUTPUT=$(appscan.sh api_login -u "$APPSCAN_KEY_ID" -P "$APPSCAN_KEY_SECRET" 2>&1)
+LOGIN_OUTPUT=$("$APPSCAN" api_login -u "$APPSCAN_KEY_ID" -P "$APPSCAN_KEY_SECRET" 2>&1)
 LOGIN_EXIT_CODE=$?
 
 echo "$LOGIN_OUTPUT"
