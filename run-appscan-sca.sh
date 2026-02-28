@@ -7,7 +7,7 @@ set -e
 # Configuration
 APPSCAN_KEY_ID="d538e9fa-dab5-6b1b-677d-da66e25e4ec3"
 APPSCAN_KEY_SECRET="qw+ENCWyAVY7kORuIcfn3yJxZ2t9aNP66xyMjIW4omgd"
-APPSCAN_APP_ID="${1:-}"  # Application ID passed as first argument
+APPSCAN_APP_ID="${1:-302e4713-ed04-4a20-b1c1-5d1713e34c85}"  # Application ID (default: CycleShop Frontend)
 SCAN_TIMEOUT="${2:-3600}"  # Optional timeout in seconds (default: 3600)
 FRONTEND_REPO_URL="https://f2264bd0d8e568db3c55f4cf2f41ab041707395c@10.134.60.169.nip.io/control/Team1/CycleShop-FrontEnd.git"
 WORK_DIR=~/appscan-scans
@@ -21,8 +21,10 @@ echo "=========================================="
 # Validate required parameters
 if [ -z "$APPSCAN_APP_ID" ]; then
     echo "Error: Application ID required"
-    echo "Usage: $0 <application_id> [timeout_seconds]"
-    echo "Example: $0 abc123-def456-ghi789 3600"
+    echo "Usage: $0 [application_id] [timeout_seconds]"
+    echo "Example: $0 302e4713-ed04-4a20-b1c1-5d1713e34c85 3600"
+    echo ""
+    echo "Default Application ID: 302e4713-ed04-4a20-b1c1-5d1713e34c85"
     exit 1
 fi
 
