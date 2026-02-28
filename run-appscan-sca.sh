@@ -5,8 +5,8 @@
 set -e
 
 # Configuration
-APPSCAN_KEY_ID="d538e9fa-dab5-6b1b-677d-da66e25e4ec3"
-APPSCAN_KEY_SECRET="qw+ENCWyAVY7kORuIcfn3yJxZ2t9aNP66xyMjIW4omgd"
+APPSCAN_KEY_ID="5079dd89-2c68-4f4a-4052-25094a7a7798"
+APPSCAN_KEY_SECRET="6jcVh9ztN1uxo2hlFg4AQ6lMV9b3IDYTghzAY8xps7PF"
 APPSCAN_APP_ID="${1:-302e4713-ed04-4a20-b1c1-5d1713e34c85}"  # Application ID (default: CycleShop Frontend)
 SCAN_TIMEOUT="${2:-3600}"  # Optional timeout in seconds (default: 3600)
 FRONTEND_REPO_URL="https://f2264bd0d8e568db3c55f4cf2f41ab041707395c@10.134.60.169.nip.io/control/Team1/CycleShop-FrontEnd.git"
