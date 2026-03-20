@@ -50,6 +50,8 @@ services:
       - "3000:80"
     environment:
       - API_UPSTREAM=${SENDIT_API_UPSTREAM:-http://server:5000}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - server
     extra_hosts:
