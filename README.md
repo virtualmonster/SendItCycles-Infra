@@ -4,7 +4,7 @@ Docker-based deployment configuration for **SendIt Cycles**. Contains everything
 
 ## Start Here (Most Users)
 
-If you only want to run SendIt Cycles, start here.
+If you are not a developer and just want to run SendIt Cycles, follow this exact path.
 
 SendIt Cycles uses 3 repositories:
 
@@ -12,23 +12,83 @@ SendIt Cycles uses 3 repositories:
 2. https://github.com/virtualmonster/SendItCycles-BackEnd
 3. https://github.com/virtualmonster/SendItCycles-Infra (this repo)
 
-### Quick Start (Docker Compose)
+### 1. Prerequisites
 
-From the Infra repo root:
+Install these first:
 
-```bash
-# SQLite mode (fastest, no Postgres needed)
-JWT_SECRET=local-secret docker compose -f docker-compose.demo.yml up --build
+1. `Git`
+2. `Docker Desktop` (must include Docker Compose)
 
-# PostgreSQL mode
-docker compose up --build
+Before continuing, confirm Docker is running.
+
+You need these ports free on your machine:
+
+- `3000` (frontend)
+- `5000` (backend API)
+- `5432` (PostgreSQL, only when using PostgreSQL mode)
+
+### 2. Create a local folder and clone repos
+
+Use PowerShell on Windows:
+
+```powershell
+mkdir C:\SendItCycles
+cd C:\SendItCycles
+
+git clone https://github.com/virtualmonster/SendItCycles-Infra.git infra
+cd infra
+
+# Clone FrontEnd and BackEnd into the folder names expected by compose
+git clone https://github.com/virtualmonster/SendItCycles-FrontEnd.git client
+git clone https://github.com/virtualmonster/SendItCycles-BackEnd.git server
 ```
 
-Open:
+After cloning, your folder should look like this:
+
+```text
+C:\SendItCycles\infra\
+	docker-compose.demo.yml
+	docker-compose.yml
+	client\   (SendItCycles-FrontEnd)
+	server\   (SendItCycles-BackEnd)
+```
+
+### 3. Start SendIt Cycles (recommended mode)
+
+From `C:\SendItCycles\infra` run:
+
+```powershell
+$env:JWT_SECRET="local-secret"
+docker compose -f docker-compose.demo.yml up --build
+```
+
+This is SQLite mode and is the easiest way to run the app.
+
+### 4. Open the app
 
 - Frontend: `http://localhost:3000`
 - Backend API: `http://localhost:5000/api`
 - API docs: `http://localhost:5000/api-docs`
+
+### 5. Stop the app
+
+In the same terminal, press `Ctrl+C`.
+
+If containers remain running:
+
+```powershell
+docker compose -f docker-compose.demo.yml down
+```
+
+### 6. Optional: start with PostgreSQL instead of SQLite
+
+From `C:\SendItCycles\infra`:
+
+```powershell
+docker compose up --build
+```
+
+Use this mode only if you specifically need PostgreSQL.
 
 ### Important Note About Repository Layout
 
