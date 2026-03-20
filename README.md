@@ -2,38 +2,54 @@
 
 Docker-based deployment configuration for **SendIt Cycles**. Contains everything needed to run the full stack (frontend, backend, optional PostgreSQL) in containers for local demos, dev, staging, and production environments.
 
----
+## Start Here (Most Users)
 
-## Quick Start — Full Stack Locally (SQLite, no database needed)
+If you only want to run SendIt Cycles, start here.
 
-The fastest way to run the entire SendIt Cycles application locally:
+SendIt Cycles uses 3 repositories:
+
+1. https://github.com/virtualmonster/SendItCycles-FrontEnd
+2. https://github.com/virtualmonster/SendItCycles-BackEnd
+3. https://github.com/virtualmonster/SendItCycles-Infra (this repo)
+
+### Quick Start (Docker Compose)
+
+From the Infra repo root:
 
 ```bash
-# From this repo root
+# SQLite mode (fastest, no Postgres needed)
 JWT_SECRET=local-secret docker compose -f docker-compose.demo.yml up --build
-```
 
-- Frontend: **http://localhost:3000**
-- Backend API: **http://localhost:5000/api**
-- API Docs: **http://localhost:5000/api-docs**
-
-Uses SQLite — no PostgreSQL required.
-
----
-
-## Quick Start — Full Stack with PostgreSQL
-
-```bash
-# From this repo root
+# PostgreSQL mode
 docker compose up --build
 ```
 
-This starts:
-- PostgreSQL 15 database (auto-initialised from `server/database/init-postgres.sql`)
-- Backend API on port 5000 (connected to PostgreSQL)
-- Frontend on port 3000
+Open:
 
-The `docker-compose.yml` has hardcoded demo credentials. For production, replace them with environment variables or use the environment-specific configs below.
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:5000/api`
+- API docs: `http://localhost:5000/api-docs`
+
+### Important Note About Repository Layout
+
+The top-level compose files in this repo expect the frontend and backend code at:
+
+- `./client`
+- `./server`
+
+If your local checkout uses separate sibling repos (`SendItCycles-FrontEnd`, `SendItCycles-BackEnd`), use your local wrapper compose setup or adjust build contexts before running these files.
+
+### Infra Script Entry Point
+
+For environment deployments (dev/staging/prod), use:
+
+- `scripts/deploy.sh`
+
+Example:
+
+```bash
+./scripts/deploy.sh dev deploy
+```
 
 ---
 
@@ -63,7 +79,7 @@ The `docker-compose.yml` has hardcoded demo credentials. For production, replace
 
 ---
 
-## Environment Configurations
+## Environment Configurations (CI/CD)
 
 The `environments/` subdirectories are designed for **CI/CD GitOps deployments** using pre-built images from the internal container registry. They are used by `scripts/deploy.sh` which sources the relevant `.env.*` file and runs docker compose.
 
@@ -81,7 +97,7 @@ The `environments/` subdirectories are designed for **CI/CD GitOps deployments**
 ./scripts/deploy.sh prod rollback
 ```
 
-> **Note:** The environment docker-compose files reference a private container image registry. They will not work without access to that registry. Use `docker-compose.yml` or `docker-compose.demo.yml` for local builds.
+> **Note:** The environment docker-compose files reference a private container image registry. They will not work without registry access.
 
 ---
 
@@ -96,6 +112,14 @@ SendIt Cycles supports two database backends, controlled by the `USE_SQLITE` env
 
 `docker-compose.demo.yml` uses SQLite.
 `docker-compose.yml` uses PostgreSQL.
+
+---
+
+## Repo Links
+
+- Frontend repo: https://github.com/virtualmonster/SendItCycles-FrontEnd
+- Backend repo: https://github.com/virtualmonster/SendItCycles-BackEnd
+- Infra repo: https://github.com/virtualmonster/SendItCycles-Infra
 
 ---
 
