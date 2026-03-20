@@ -35,27 +35,25 @@ Use PowerShell on Windows:
 mkdir C:\SendItCycles
 cd C:\SendItCycles
 
-git clone https://github.com/virtualmonster/SendItCycles-Infra.git infra
-cd infra
+git clone https://github.com/virtualmonster/SendItCycles-Infra.git SendItCycles-Infra
+git clone https://github.com/virtualmonster/SendItCycles-FrontEnd.git SendItCycles-FrontEnd
+git clone https://github.com/virtualmonster/SendItCycles-BackEnd.git SendItCycles-BackEnd
 
-# Clone FrontEnd and BackEnd into the folder names expected by compose
-git clone https://github.com/virtualmonster/SendItCycles-FrontEnd.git client
-git clone https://github.com/virtualmonster/SendItCycles-BackEnd.git server
+cd SendItCycles-Infra
 ```
 
 After cloning, your folder should look like this:
 
 ```text
-C:\SendItCycles\infra\
-	docker-compose.demo.yml
-	docker-compose.yml
-	client\   (SendItCycles-FrontEnd)
-	server\   (SendItCycles-BackEnd)
+C:\SendItCycles\
+  SendItCycles-Infra\
+  SendItCycles-FrontEnd\
+  SendItCycles-BackEnd\
 ```
 
 ### 3. Start SendIt Cycles (recommended mode)
 
-From `C:\SendItCycles\infra` run:
+From `C:\SendItCycles\SendItCycles-Infra` run:
 
 ```powershell
 docker compose up --build
@@ -81,7 +79,7 @@ docker compose down
 
 ### 6. Optional: start with PostgreSQL instead of SQLite
 
-From `C:\SendItCycles\infra`:
+From `C:\SendItCycles\SendItCycles-Infra`:
 
 ```powershell
 docker compose -f docker-compose.demo.yml up --build
@@ -89,14 +87,20 @@ docker compose -f docker-compose.demo.yml up --build
 
 Use this mode only if you specifically need PostgreSQL.
 
-### Important Note About Repository Layout
+### Repository Layout
 
-The top-level compose files in this repo expect the frontend and backend code at:
+The top-level compose files in this repo expect sibling repositories by default:
 
-- `./client`
-- `./server`
+- `../SendItCycles-FrontEnd`
+- `../SendItCycles-BackEnd`
 
-If your local checkout uses separate sibling repos (`SendItCycles-FrontEnd`, `SendItCycles-BackEnd`), use your local wrapper compose setup or adjust build contexts before running these files.
+If your local folders use different names, set these environment variables before running compose:
+
+```powershell
+$env:SENDIT_FRONTEND_PATH="..\My-Frontend-Repo"
+$env:SENDIT_BACKEND_PATH="..\My-Backend-Repo"
+docker compose up --build
+```
 
 ### Infra Script Entry Point
 
@@ -115,8 +119,8 @@ Example:
 ## Repository Structure
 
 ```
-├── docker-compose.yml          # Full stack with SQLite (default local mode)
-├── docker-compose.demo.yml     # Full stack with PostgreSQL
+├── docker-compose.yml          # Full stack with SQLite (expects sibling repos)
+├── docker-compose.demo.yml     # Full stack with PostgreSQL (expects sibling repos)
 ├── environments/
 │   ├── dev/                    # Dev environment — builds against internal image registry
 │   │   ├── docker-compose.yml

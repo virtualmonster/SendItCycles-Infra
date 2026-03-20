@@ -1,7 +1,7 @@
 services:
   client:
     build:
-      context: ./client
+      context: ${SENDIT_FRONTEND_PATH:-../SendItCycles-FrontEnd}
       dockerfile: Dockerfile
       args:
         - NODE_ENV=production
@@ -19,7 +19,7 @@ services:
 
   server:
     build:
-      context: ./server
+      context: ${SENDIT_BACKEND_PATH:-../SendItCycles-BackEnd}
       dockerfile: Dockerfile
       args:
         - NODE_ENV=production

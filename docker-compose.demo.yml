@@ -10,7 +10,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./server/database/init-postgres.sql:/docker-entrypoint-initdb.d/init.sql
+      - ${SENDIT_BACKEND_PATH:-../SendItCycles-BackEnd}/database/init-postgres.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U sendit -d senditcycles"]
       interval: 5s
@@ -21,7 +21,7 @@ services:
 
   server:
     build:
-      context: ./server
+      context: ${SENDIT_BACKEND_PATH:-../SendItCycles-BackEnd}
       dockerfile: Dockerfile
     container_name: senditcycles_server
     ports:
@@ -43,7 +43,7 @@ services:
 
   client:
     build:
-      context: ./client
+      context: ${SENDIT_FRONTEND_PATH:-../SendItCycles-FrontEnd}
       dockerfile: Dockerfile
     container_name: senditcycles_client
     ports:
