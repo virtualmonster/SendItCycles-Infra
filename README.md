@@ -58,7 +58,6 @@ C:\SendItCycles\infra\
 From `C:\SendItCycles\infra` run:
 
 ```powershell
-$env:JWT_SECRET="local-secret"
 docker compose -f docker-compose.demo.yml up --build
 ```
 
