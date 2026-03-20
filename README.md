@@ -61,6 +61,26 @@ docker compose up --build
 
 This is SQLite mode and is the easiest way to run the app.
 
+### Optional: route API traffic through a Service Virtualization proxy
+
+By default, frontend `/api/*` traffic goes directly to the local backend at `http://server:5000`.
+
+To route API traffic to your own HTTP/HTTPS proxy endpoint instead, set `SENDIT_API_UPSTREAM` before starting compose.
+
+Examples:
+
+```powershell
+# Example: local proxy on Windows host
+$env:SENDIT_API_UPSTREAM="http://host.docker.internal:9080"
+docker compose up --build
+
+# Example: team proxy over HTTPS
+$env:SENDIT_API_UPSTREAM="https://sv-proxy.company.net:9443"
+docker compose up --build
+```
+
+Unset the variable to return to direct backend routing.
+
 ### 4. Open the app
 
 - Frontend: `http://localhost:3000`
@@ -99,6 +119,15 @@ If your local folders use different names, set these environment variables befor
 ```powershell
 $env:SENDIT_FRONTEND_PATH="..\My-Frontend-Repo"
 $env:SENDIT_BACKEND_PATH="..\My-Backend-Repo"
+docker compose up --build
+```
+
+You can combine these with API proxy routing:
+
+```powershell
+$env:SENDIT_FRONTEND_PATH="..\My-Frontend-Repo"
+$env:SENDIT_BACKEND_PATH="..\My-Backend-Repo"
+$env:SENDIT_API_UPSTREAM="http://host.docker.internal:9080"
 docker compose up --build
 ```
 
