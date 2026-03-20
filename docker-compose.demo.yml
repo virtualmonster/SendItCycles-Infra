@@ -1,50 +1,63 @@
 services:
-  client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-      args:
-        - NODE_ENV=production
+  db:
+    image: postgres:15-alpine
+    container_name: senditcycles_db
+    environment:
+      POSTGRES_USER: sendit
+      POSTGRES_PASSWORD: sendit123
+      POSTGRES_DB: senditcycles
     ports:
-      - "3000:80"
-    depends_on:
-      - server
-    networks:
-      - senditcycles
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./server/database/init-postgres.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+      test: ["CMD-SHELL", "pg_isready -U sendit -d senditcycles"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    networks:
+      - senditcycles_network
 
   server:
     build:
       context: ./server
       dockerfile: Dockerfile
-      args:
-        - NODE_ENV=production
+    container_name: senditcycles_server
     ports:
       - "5000:5000"
     environment:
-      - NODE_ENV=production
-      - USE_SQLITE=true
-      - SQLITE_PATH=/data/senditcycles.db
-      - JWT_SECRET=${JWT_SECRET:-demo-secret-key-change-in-production}
-      - JWT_EXPIRES_IN=24h
-    volumes:
-      - server_data:/data
+      NODE_ENV: production
+      PORT: 5000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: senditcycles
+      DB_USER: sendit
+      DB_PASSWORD: sendit123
+      JWT_SECRET: your_super_secret_jwt_key_change_in_production
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
-      - senditcycles
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5000/api/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+      - senditcycles_network
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: senditcycles_client
+    ports:
+      - "3000:80"
+    environment:
+      VITE_API_URL: http://localhost:5000/api
+    depends_on:
+      - server
+    networks:
+      - senditcycles_network
 
 networks:
-  senditcycles:
+  senditcycles_network:
     driver: bridge
 
 volumes:
-  server_data:
-    driver: local
+  postgres_data:

@@ -58,7 +58,7 @@ C:\SendItCycles\infra\
 From `C:\SendItCycles\infra` run:
 
 ```powershell
-docker compose -f docker-compose.demo.yml up --build
+docker compose up --build
 ```
 
 This is SQLite mode and is the easiest way to run the app.
@@ -76,7 +76,7 @@ In the same terminal, press `Ctrl+C`.
 If containers remain running:
 
 ```powershell
-docker compose -f docker-compose.demo.yml down
+docker compose down
 ```
 
 ### 6. Optional: start with PostgreSQL instead of SQLite
@@ -84,7 +84,7 @@ docker compose -f docker-compose.demo.yml down
 From `C:\SendItCycles\infra`:
 
 ```powershell
-docker compose up --build
+docker compose -f docker-compose.demo.yml up --build
 ```
 
 Use this mode only if you specifically need PostgreSQL.
@@ -115,8 +115,8 @@ Example:
 ## Repository Structure
 
 ```
-├── docker-compose.yml          # Full stack with PostgreSQL (demo/dev)
-├── docker-compose.demo.yml     # Full stack with SQLite (zero-config demo)
+├── docker-compose.yml          # Full stack with SQLite (default local mode)
+├── docker-compose.demo.yml     # Full stack with PostgreSQL
 ├── environments/
 │   ├── dev/                    # Dev environment — builds against internal image registry
 │   │   ├── docker-compose.yml
@@ -169,8 +169,8 @@ SendIt Cycles supports two database backends, controlled by the `USE_SQLITE` env
 | **SQLite** | `USE_SQLITE=true` | Local demos, quick tests, no external DB |
 | **PostgreSQL** | `USE_SQLITE=false` (default) | Staging, production, persistent data |
 
-`docker-compose.demo.yml` uses SQLite.
-`docker-compose.yml` uses PostgreSQL.
+`docker-compose.yml` uses SQLite.
+`docker-compose.demo.yml` uses PostgreSQL.
 
 ---
 
