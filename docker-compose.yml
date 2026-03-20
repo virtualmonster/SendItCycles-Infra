@@ -11,6 +11,8 @@ services:
       - API_UPSTREAM=${SENDIT_API_UPSTREAM:-http://server:5000}
     depends_on:
       - server
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - senditcycles
     healthcheck:

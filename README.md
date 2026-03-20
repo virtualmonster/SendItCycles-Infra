@@ -67,6 +67,9 @@ By default, frontend `/api/*` traffic goes directly to the local backend at `htt
 
 To route API traffic to your own HTTP/HTTPS proxy endpoint instead, set `SENDIT_API_UPSTREAM` before starting compose.
 
+Important: do not use `localhost` here. From inside the frontend container, `localhost` means the container itself.
+Use `host.docker.internal` (or a reachable host/IP) for a proxy running on your machine.
+
 Examples:
 
 ```powershell
